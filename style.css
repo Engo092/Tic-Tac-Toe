@@ -24,6 +24,7 @@ body {
 }
 
 .square {
+    position: static;
     border-style: solid;
     border-color: rgb(27, 32, 34);
     border-width: 1px;
@@ -57,4 +58,33 @@ body {
 
     /* This fixes a small yet annoying visual bug that is for some reason exclusive to this square */
     margin-top: 1px;
+}
+
+.winDisplay {
+    margin-top: 2vh;
+    text-align: center;
+    color: white;
+    font-size: max(6vh, 48px);
+    font-weight: bold;
+    -webkit-text-stroke: rgb(46, 46, 46) 1px;
+}
+
+.restart {
+    background-color: blue;
+    font-size: max(3vh, 24px);
+    color: white;
+    border-style: solid;
+    border-width: 5px;
+    border-color: white;
+    margin: 0 auto;
+    margin-top: 2vh;
+    display: block;
+}
+
+.restart:hover {
+    background-color: rgb(83, 83, 255);
+}
+
+.noDisplay {
+    display: none;
 }

@@ -1,4 +1,3 @@
-// Initializes game board as an array
 const GameBoard = (() => {
      let gameBoard = [[null, null, null], 
                      [null, null, null],
@@ -9,14 +8,13 @@ const GameBoard = (() => {
 })();
 
 
-
 const Players = (name, side) => {
     return { name, side };
 };
 
 
-
 const displayController = (() => {
+
     const displayBoard = (gameBoard) => {
         let board = document.querySelector(".board");
         board.innerHTML = "";
@@ -41,7 +39,6 @@ const displayController = (() => {
                 square.classList.remove("noBorder");
                 square.classList.add("cornerB");
             }
-
             return square;
         }
 
@@ -68,6 +65,7 @@ const displayController = (() => {
         }
     };
 
+    // Checks which player will make the next move
     const activePlayer = (board) => {
         let count = 0;
         for(let i = 0; i < 3; i++) {
@@ -92,6 +90,7 @@ const displayController = (() => {
         return true;
     }
 
+    // Updates board visually
     const updateBoard = (board, squares) => {
         let currentPlayer = activePlayer(board);
 
@@ -105,19 +104,97 @@ const displayController = (() => {
         return board;
     }
 
+    const tieCheck = (board) => {
+        let nullCount = 0;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] == null) {
+                    nullCount++;
+                }
+            }
+        }
+        if (nullCount == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    const checkWin = (board) => {
+        for (let i = 0; i < 3; i++) {
+            if (board[i][0] == "X" && board[i][1] == "X" && board[i][2] == "X") {
+                return "X";
+            }
+            if (board[i][0] == "O" && board[i][1] == "O" && board[i][2] == "O") {
+                return "O";
+            }
+            if (board[0][i] == "X" && board[1][i] == "X" && board[2][i] == "X") {
+                return "X";
+            }
+            if (board[0][i] == "O" && board[1][i] == "O" && board[2][i] == "O") {
+                return "O";
+            }
+        }
+
+        if (board[0][0] == "X" && board[1][1] == "X" && board[2][2] == "X") {
+            return "X";
+        }
+        if (board[0][0] == "O" && board[1][1] == "O" && board[2][2] == "O") {
+            return "O";
+        }
+        if (board[0][2] == "X" && board[1][1] == "X" && board[2][0] == "X") {
+            return "X"
+        }
+        if (board[0][2] == "O" && board[1][1] == "O" && board[2][0] == "O") {
+            return "O"
+        }
+        
+        let isTie = tieCheck(board);
+        if (isTie) {
+            return "Tie!";
+        }
+        return false;
+    }
+
     return { displayBoard,
-            updateBoard 
+            updateBoard,
+            checkWin,
         };
 })();
 
-let currentBoard = GameBoard.gameBoard;
-displayController.displayBoard(currentBoard);
 let player1 = Players("Player1", "X");
 let player2 = Players("Player2", "O");
 
-let squares = document.querySelectorAll(".square");
-for (let i = 0; i < squares.length; i++) {
-    squares[i].addEventListener('click', function() {
-        currentBoard = displayController.updateBoard(currentBoard, squares[i]);
-    })
-};
+const playControl = (() => {
+     
+    const displayWinner = (winner) => {
+        let winDisplay = document.querySelector(".winDisplay");
+        if (winner == "Tie!") {
+            winDisplay.innerText = `${winner}`;
+        }
+        else {
+            winDisplay.innerText = `${winner} Wins the Game!`;
+        }
+        let restart = document.querySelector(".restart");
+        restart.classList.remove("noDisplay");
+        restart.addEventListener("click", function() {
+            window.location.reload();
+        });
+    };
+
+    let currentBoard = GameBoard.gameBoard;
+    displayController.displayBoard(currentBoard);
+
+    let squares = document.querySelectorAll(".square");
+        for (let i = 0; i < squares.length; i++) {
+                squares[i].addEventListener('click', function() {
+                    if (document.querySelector(".winDisplay").innerText == "") {
+                        currentBoard = displayController.updateBoard(currentBoard, squares[i]);
+                        
+                        let winner = displayController.checkWin(currentBoard);
+                        if (winner != false) {
+                            displayWinner(winner);
+                        }
+                    }
+                });
+        };
+})();
