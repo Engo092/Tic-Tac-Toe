@@ -12,6 +12,19 @@ const Players = (name, side) => {
     return { name, side };
 };
 
+document.querySelector("form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    let p1Name = document.querySelector(".p1").value;
+    let p2Name = document.querySelector(".p2").value;
+    let player1 = Players(p1Name, "X");
+    let player2 = Players(p2Name, "O");
+    
+    document.querySelector(".board").classList.remove("noDisplay");
+    document.querySelector(".form").classList.add("noDisplay");
+    document.querySelector("h1").classList.add("noDisplay");
+
+    playControl.playGame(player1, player2);
+})
 
 const displayController = (() => {
 
@@ -66,7 +79,7 @@ const displayController = (() => {
     };
 
     // Checks which player will make the next move
-    const activePlayer = (board) => {
+    const activePlayer = (board, player1, player2) => {
         let count = 0;
         for(let i = 0; i < 3; i++) {
             for(let j = 0; j < 3; j++) {
@@ -91,8 +104,8 @@ const displayController = (() => {
     }
 
     // Updates board visually
-    const updateBoard = (board, squares) => {
-        let currentPlayer = activePlayer(board);
+    const updateBoard = (board, squares, player1, player2) => {
+        let currentPlayer = activePlayer(board, player1, player2);
 
         let column = squares.id.charAt(0);
         let square = squares.id.charAt(2);
@@ -134,7 +147,6 @@ const displayController = (() => {
                 return "O";
             }
         }
-
         if (board[0][0] == "X" && board[1][1] == "X" && board[2][2] == "X") {
             return "X";
         }
@@ -161,18 +173,20 @@ const displayController = (() => {
         };
 })();
 
-let player1 = Players("Player1", "X");
-let player2 = Players("Player2", "O");
-
 const playControl = (() => {
      
-    const displayWinner = (winner) => {
+    const displayWinner = (winner, player1, player2) => {
         let winDisplay = document.querySelector(".winDisplay");
         if (winner == "Tie!") {
             winDisplay.innerText = `${winner}`;
         }
         else {
-            winDisplay.innerText = `${winner} Wins the Game!`;
+            if (winner == player1.side) {
+                winDisplay.innerText = `${player1.name} Wins the Game!`;
+            }
+            if (winner == player2.side) {
+                winDisplay.innerText = `${player2.name} Wins the Game!`;
+            }
         }
         let restart = document.querySelector(".restart");
         restart.classList.remove("noDisplay");
@@ -180,21 +194,25 @@ const playControl = (() => {
             window.location.reload();
         });
     };
-
-    let currentBoard = GameBoard.gameBoard;
-    displayController.displayBoard(currentBoard);
-
-    let squares = document.querySelectorAll(".square");
-        for (let i = 0; i < squares.length; i++) {
-                squares[i].addEventListener('click', function() {
-                    if (document.querySelector(".winDisplay").innerText == "") {
-                        currentBoard = displayController.updateBoard(currentBoard, squares[i]);
-                        
-                        let winner = displayController.checkWin(currentBoard);
-                        if (winner != false) {
-                            displayWinner(winner);
+    
+    const playGame = (player1, player2) => {
+        let currentBoard = GameBoard.gameBoard;
+        displayController.displayBoard(currentBoard);
+    
+        let squares = document.querySelectorAll(".square");
+            for (let i = 0; i < squares.length; i++) {
+                    squares[i].addEventListener('click', function() {
+                        if (document.querySelector(".winDisplay").innerText == "") {
+                            currentBoard = displayController.updateBoard(currentBoard, squares[i], player1, player2);
+                            
+                            let winner = displayController.checkWin(currentBoard);
+                            if (winner != false) {
+                                displayWinner(winner, player1, player2);
+                            }
                         }
-                    }
-                });
-        };
+                    });
+            };
+    };
+    
+    return { playGame };
 })();
