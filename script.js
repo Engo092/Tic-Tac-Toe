@@ -15,7 +15,13 @@ const Players = (name, side) => {
 document.querySelector("form").addEventListener("submit", function(event) {
     event.preventDefault();
     let p1Name = document.querySelector(".p1").value;
+    if (p1Name == "") {
+        p1Name = "Player 1"
+    }
     let p2Name = document.querySelector(".p2").value;
+    if (p2Name == "") {
+        p2Name = "Player 2"
+    }
     let player1 = Players(p1Name, "X");
     let player2 = Players(p2Name, "O");
     
