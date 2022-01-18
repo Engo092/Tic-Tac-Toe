@@ -1,4 +1,4 @@
-# Tic Tac Toe Game (W.I.P (no A.I yer))
+# Tic Tac Toe Game (no A.I yet)
 
 This is another project from The Odin Project, being a Javascript Tic Tac Toe game. It is meant to be an introduction to concepts such as factory functions, module patterns, private functions and related concepts.
 
