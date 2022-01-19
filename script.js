@@ -8,9 +8,28 @@ const GameBoard = (() => {
 })();
 
 
-const Players = (name, side) => {
-    return { name, side };
+
+const Players = (name, side, truePlayer) => {
+    return { name, side, truePlayer };
 };
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector(".side").classList.add("noDisplay");
+    document.getElementById("human").checked = true;
+});
+
+
+document.getElementById("human").addEventListener("change", function() {
+    document.querySelector(".side").classList.add("noDisplay");
+});
+
+
+document.getElementById("computer").addEventListener("change", function() {
+    document.querySelector(".side").classList.remove("noDisplay");
+});
+
 
 document.querySelector("form").addEventListener("submit", function(event) {
     event.preventDefault();
@@ -22,15 +41,34 @@ document.querySelector("form").addEventListener("submit", function(event) {
     if (p2Name == "") {
         p2Name = "Player 2"
     }
-    let player1 = Players(p1Name, "X");
-    let player2 = Players(p2Name, "O");
+
+    let player1;
+    let player2;
+    if (document.getElementById("computer").checked) {
+        if (document.getElementById("xSide").checked) {
+            player1 = Players(p1Name, "X", "human");
+            player2 = Players(p2Name, "O", "computer");
+        }
+        else {
+            player1 = Players(p1Name, "X", "computer");
+            player2 = Players(p2Name, "O", "human");
+        }
+    }
+    else {
+        player1 = Players(p1Name, "X", "human");
+        player2 = Players(p2Name, "O", "human");
+    }
     
     document.querySelector(".board").classList.remove("noDisplay");
     document.querySelector(".form").classList.add("noDisplay");
     document.querySelector("h1").classList.add("noDisplay");
-
-    playControl.playGame(player1, player2);
+    
+    let currentBoard = GameBoard.gameBoard;
+    displayController.displayBoard(currentBoard);
+    playControl.playGame(currentBoard, player1, player2);
 })
+
+
 
 const displayController = (() => {
 
@@ -176,8 +214,11 @@ const displayController = (() => {
     return { displayBoard,
             updateBoard,
             checkWin,
+            activePlayer
         };
 })();
+
+
 
 const playControl = (() => {
      
@@ -200,25 +241,172 @@ const playControl = (() => {
             window.location.reload();
         });
     };
+
+    // Updates board and possible winner after a play
+    const playerPlay = (board, square, player1, player2) => {
+        currentBoard = displayController.updateBoard(board, square, player1, player2);
+        let winner = displayController.checkWin(currentBoard);
+        if (winner != false) {
+            displayWinner(winner, player1, player2);
+        };
+    };
     
-    const playGame = (player1, player2) => {
-        let currentBoard = GameBoard.gameBoard;
-        displayController.displayBoard(currentBoard);
-    
-        let squares = document.querySelectorAll(".square");
+    // Main playing dynamics
+    const playGame = (currentBoard, player1, player2) => {
+        let activePlayer = displayController.activePlayer(currentBoard, player1, player2);
+        
+        if (activePlayer.truePlayer != "computer") {
+            let squares = document.querySelectorAll(".square");
             for (let i = 0; i < squares.length; i++) {
-                    squares[i].addEventListener('click', function() {
-                        if (document.querySelector(".winDisplay").innerText == "") {
-                            currentBoard = displayController.updateBoard(currentBoard, squares[i], player1, player2);
-                            
-                            let winner = displayController.checkWin(currentBoard);
-                            if (winner != false) {
-                                displayWinner(winner, player1, player2);
-                            }
-                        }
-                    });
+                squares[i].addEventListener('click', function() {
+                    if (document.querySelector(".winDisplay").innerText == "") {
+                        playerPlay(currentBoard, squares[i], player1, player2);
+                        playGame(currentBoard, player1, player2);
+                    };
+                });
             };
+        }
+        else {
+            if (document.querySelector(".winDisplay").innerText == "") {
+                let copy = [];
+                for (let i = 0; i < currentBoard.length; i++) { 
+                    copy[i] = currentBoard[i].slice();
+                }
+                let play = aiPlay.minimax(copy, activePlayer);
+                playerPlay(currentBoard, play, player1, player2);
+                playGame(currentBoard, player1, player2);
+            };
+        };
     };
     
     return { playGame };
+})();
+
+
+
+const aiPlay = (() => {
+
+    // Returns all possible plays
+    const playCheck = (board) => {
+        let plays = []
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] == null) {
+                    plays.push([[i],[j]]);
+                };
+            };
+        };
+        return plays;
+    }
+
+    // Returns result of playing a certain square on the board
+    const playResult = (board, column, square, side) => {
+        let copy = []
+        for (let i = 0; i < board.length; i++) {
+            copy[i] = board[i].slice();
+        }
+        copy[column][square] = side;
+        return copy;
+    }
+
+    // Checks for winner
+    const boardWin = (board) => {
+        let winner = displayController.checkWin(board);
+        if (winner) {
+            if (winner == "X") {
+                return 3;
+            }
+            if (winner == "O") {
+                return 1;
+            }
+            else {
+                return 2;
+            }
+        }
+        return false;
+    }
+    
+    // Tries to maximize plays as much as possible
+    const maxPlay = (board) => {
+        if (boardWin(board)) {
+            return boardWin(board);
+        }
+        let max = -9999;
+        let plays = playCheck(board);
+        for (let i = 0; i < plays.length; i++) {
+            let result = minPlay(playResult(board, plays[i][0], plays[i][1], "X"));
+            if (result > max) {
+                max = result;
+            }
+            if (max == 3) {
+                return max;
+            }
+        }
+        return max;
+    }
+
+    // Tries to minimize plays as much as possible
+    const minPlay = (board) => {
+        if (boardWin(board)) {
+            return boardWin(board);
+        }
+        let min = 9999;
+        let plays = playCheck(board);
+        for (let i = 0; i < plays.length; i++) {
+            let result = maxPlay(playResult(board, plays[i][0], plays[i][1], "O"));
+            console.log(result);
+            if (result < min) {
+                min = result;
+            }
+            if (min == 1) {
+                return min;
+            }
+        }
+        return min;
+    }
+
+    const minimax = (board, aiPlayer) => {
+        let choice = [];
+        let plays = playCheck(board);
+
+        if (aiPlayer.side == "X") {
+            let max = maxPlay(board, "X");
+            for (let i = 0; i < plays.length; i++) {
+                let result = minPlay(playResult(board, plays[i][0], plays[i][1], "X"));
+                if (result == max) {
+                    choice = plays[i];
+                    let squares = document.querySelectorAll(".square");
+                    for (let i = 0; i < squares.length; i++) {
+                        let column = squares[i].id.charAt(0);
+                        let square = squares[i].id.charAt(2);
+
+                        if (column == choice[0] && square == choice[1]) {
+                            return squares[i];
+                        }
+                    };
+                };
+            };
+        }
+        else {
+            let min = minPlay(board, "O");
+            console.log(min);
+            for (let i = 0; i < plays.length; i++) {
+                let result = maxPlay(playResult(board, plays[i][0], plays[i][1], "O"));
+                if (result == min) {
+                    choice = plays[i];
+                    let squares = document.querySelectorAll(".square");
+                    for (let i = 0; i < squares.length; i++) {
+                        let column = squares[i].id.charAt(0);
+                        let square = squares[i].id.charAt(2);
+
+                        if (column == choice[0] && square == choice[1]) {
+                            return squares[i];
+                        }
+                    };
+                }
+            }
+        }
+    };
+
+    return { minimax }
 })();

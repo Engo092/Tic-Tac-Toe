@@ -1,7 +1,9 @@
-# Tic Tac Toe Game (no A.I yet)
+# Tic Tac Toe Game
 
-This is another project from The Odin Project, being a Javascript Tic Tac Toe game. It is meant to be an introduction to concepts such as factory functions, module patterns, private functions and related concepts.
+This is another project from The Odin Project, being a Javascript Tic Tac Toe game. It is meant to be an introduction to concepts such as factory functions, module patterns, private functions and related concepts. (As well as tecnically a bit of A.I as well)
 
-Currently this project is mostly finished, and you can input both player's names and play Tic Tac Toe with yourself or someone else, with the code displaying the winner when a winning condition is met. So far i haven't found any bugs as well, except a minor one that was easily fixed, which is always good.
+In this project you can name both players and choose to play against yourself/someone else or choose to play against an unbeatable computer A.I, which was implemented using the minimax algorithm. After a player wins their name will be displayed on the page, and you can then restart the game.
 
-The only thing left to add in this project is a computer A.I that uses the minimax algorithm, which i already have an idea on how to do as i created something similar in the CS50AI course that i finished a while back.
+While creating this project i, as always, focused first on the HTML and CSS and then moved on to Javascript, creating first all of the game dynamics (displaying and updating the board, making it possible to play by clicking, etc) and then moved on to the display, which required modifications in the CSS and HTML (player names, displaying the winner, creating the buttons for choosing A.I and which side to play) and then i finally moved to the A.I itself. Creating the A.I was a challenge that i definitively underestimated at first, and i ended up with various different problems while making it which almost made me give up, but after various bug fixes and a long time of me bashing my head against the table i finally made it work and i am very proud of it.
+
+Known bug: when the computer radio button is checked and the tab is closed and then reopened with ctrl + shift + t, the button will still be checked even though the "X" and "O" radio buttons won't be displayed and there is a function that literally prevents that on page load... I have no idea on how to fix it and simply restarting the page or checking the other radio buttons will fix the issue.

@@ -145,3 +145,16 @@ h1 {
 .noDisplay {
     display: none;
 }
+
+.radios {
+    margin-top: 5vh;
+    font-size: 36px;
+    color: whitesmoke;
+    -webkit-text-stroke: rgb(28, 34, 44) 1px;
+}
+
+.side {
+    margin-top: 2vh;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+}
