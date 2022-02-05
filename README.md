@@ -1,6 +1,6 @@
 # Tic Tac Toe Game
 
-This is another project from The Odin Project, being a Javascript Tic Tac Toe game. It is meant to be an introduction to concepts such as factory functions, module patterns, private functions and related concepts. (As well as tecnically a bit of A.I as well)
+This is another project from The Odin Project, being a Javascript Tic Tac Toe game. It is meant to be an introduction to concepts such as factory functions, module patterns, private functions and related concepts. (As well as technically a bit of A.I as well)
 
 In this project you can name both players and choose to play against yourself/someone else or choose to play against an unbeatable computer A.I, which was implemented using the minimax algorithm. After a player wins their name will be displayed on the page, and you can then restart the game.
 
