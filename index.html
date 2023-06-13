@@ -10,32 +10,43 @@
     </head>
 
     <body>
-        <h1>Tic Tac Toe</h1>
-        <div class="form">
-            <form>
-                <div class="texts">
-                    <input type="text" class="p1" value="Player 1">
-                    <input type="text" class="p2" value="Player 2">
-                </div>
-                <div class="radios">
-                    <input type="radio" id="human" name="opponent" checked>
-                    <label for="#human">Human</label>
-                    <input type="radio" id="computer" name="opponent">
-                    <label for="#computer">Computer</label>
-                </div>
-                <div class="side">
-                    <span>Play as: </span>
-                    <input type="radio" id="xSide" name="side" checked>
-                    <label for="#xSide">X Side</label>
-                    <input type="radio" id="oSide" name="side">
-                    <label for="#oSide">O Side</label>
-                </div>
-                <button type="submit" class="submit">Play Game!</button>
-            </form>
-        </div>
+        <div class="content">
+            <h1>Tic Tac Toe</h1>
+            <div class="form">
+                <form>
+                    <div class="texts">
+                        <input type="text" class="p1" placeholder="Player 1">
+                        <input type="text" class="p2" placeholder="Player 2">
+                    </div>
+                    <div class="radios">
+                        <label class="humanLabel">
+                            <input type="radio" id="human" name="opponent" checked>
+                            Human
+                        </label>
+                        <label>
+                            Computer
+                            <input type="radio" id="computer" name="opponent">
+                        </label>
+                        
+                    </div>
+                    <div class="side">
+                        <span>Play as: </span>
+                        <label class="xSide">
+                            <input type="radio" id="xSide" name="side" checked>
+                            X Side
+                        </label>
+                        <label class="oSide">
+                            <input type="radio" id="oSide" name="side">
+                            O Side
+                        </label>
+                    </div>
+                    <button type="submit" class="submit">Play Game!</button>
+                </form>
+            </div>
 
-        <div class="winDisplay"></div>
-        <button class="restart noDisplay">Restart</button>
-        <div class="board noDisplay"></div>
+            <div class="winDisplay"></div>
+            <button class="restart noDisplay">Restart</button>
+            <div class="board noDisplay"></div>
+        </div>
     </body>
 </html>

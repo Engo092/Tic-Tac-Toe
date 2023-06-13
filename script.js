@@ -2,17 +2,13 @@ const GameBoard = (() => {
      let gameBoard = [[null, null, null], 
                      [null, null, null],
                      [null, null, null]];     
-    return {
-        gameBoard
-    }
+    return { gameBoard }
 })();
-
 
 
 const Players = (name, side, truePlayer) => {
     return { name, side, truePlayer };
 };
-
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -25,7 +21,6 @@ document.getElementById("human").addEventListener("change", function() {
     document.querySelector(".side").classList.add("noDisplay");
 });
 
-
 document.getElementById("computer").addEventListener("change", function() {
     document.querySelector(".side").classList.remove("noDisplay");
 });
@@ -33,44 +28,21 @@ document.getElementById("computer").addEventListener("change", function() {
 
 document.querySelector("form").addEventListener("submit", function(event) {
     event.preventDefault();
-    let p1Name = document.querySelector(".p1").value;
-    if (p1Name == "") {
-        p1Name = "Player 1"
-    }
-    let p2Name = document.querySelector(".p2").value;
-    if (p2Name == "") {
-        p2Name = "Player 2"
-    }
 
-    let player1;
-    let player2;
-    if (document.getElementById("computer").checked) {
-        if (document.getElementById("xSide").checked) {
-            player1 = Players(p1Name, "X", "human");
-            player2 = Players(p2Name, "O", "computer");
-        }
-        else {
-            player1 = Players(p1Name, "X", "computer");
-            player2 = Players(p2Name, "O", "human");
-        }
-    }
-    else {
-        player1 = Players(p1Name, "X", "human");
-        player2 = Players(p2Name, "O", "human");
-    }
+    let players = playControl.startGame();
     
     document.querySelector(".board").classList.remove("noDisplay");
     document.querySelector(".form").classList.add("noDisplay");
     document.querySelector("h1").classList.add("noDisplay");
     
     let currentBoard = GameBoard.gameBoard;
-    displayController.displayBoard(currentBoard);
-    playControl.playGame(currentBoard, player1, player2);
+    displayControl.displayBoard(currentBoard);
+    playControl.playGame(currentBoard, players.player1, players.player2);
 })
 
 
 
-const displayController = (() => {
+const displayControl = (() => {
 
     const displayBoard = (gameBoard) => {
         let board = document.querySelector(".board");
@@ -81,8 +53,7 @@ const displayController = (() => {
             if (i == 0 && j == 1) {
                 square.classList.remove("noBorder");
                 square.classList.add("cornerT");
-            }
-            else if (i == 1) {
+            } else if (i == 1) {
                 if (j == 0) {
                     square.classList.remove("noBorder");
                     square.classList.add("cornerL");
@@ -91,8 +62,7 @@ const displayController = (() => {
                     square.classList.remove("noBorder");
                     square.classList.add("cornerR");
                 }
-            }
-            else if (i == 2 && j == 1) {
+            } else if (i == 2 && j == 1) {
                 square.classList.remove("noBorder");
                 square.classList.add("cornerB");
             }
@@ -111,8 +81,7 @@ const displayController = (() => {
                 if (gameBoard[i][j] != null) {
                     if (gameBoard[i][j] == "X") {
                         square.innerText = "X";
-                    }
-                    else if (gameBoard[i][j] == "O") {
+                    } else if (gameBoard[i][j] == "O") {
                         square.innerText = "O";
                     }
                 }
@@ -134,8 +103,7 @@ const displayController = (() => {
         }
         if (count % 2 == 0) {
             return player1;
-        }
-        else {
+        } else {
             return player2;
         }
     }
@@ -221,13 +189,39 @@ const displayController = (() => {
 
 
 const playControl = (() => {
+
+    const startGame = () => {
+        let p1Name = document.querySelector(".p1").value;
+        if (p1Name == "") {
+            p1Name = "Player 1"
+        }
+        let p2Name = document.querySelector(".p2").value;
+        if (p2Name == "") {
+            p2Name = "Player 2"
+        }
+    
+        let player1;
+        let player2;
+        if (document.getElementById("computer").checked) {
+            if (document.getElementById("xSide").checked) {
+                player1 = Players(p1Name, "X", "human");
+                player2 = Players(p2Name, "O", "computer");
+            } else {
+                player1 = Players(p1Name, "X", "computer");
+                player2 = Players(p2Name, "O", "human");
+            }
+        } else {
+            player1 = Players(p1Name, "X", "human");
+            player2 = Players(p2Name, "O", "human");
+        }
+        return {player1 : player1, player2 : player2}
+    }
      
     const displayWinner = (winner, player1, player2) => {
         let winDisplay = document.querySelector(".winDisplay");
         if (winner == "Tie!") {
             winDisplay.innerText = `${winner}`;
-        }
-        else {
+        } else {
             if (winner == player1.side) {
                 winDisplay.innerText = `${player1.name} Wins the Game!`;
             }
@@ -244,16 +238,16 @@ const playControl = (() => {
 
     // Updates board and possible winner after a play
     const playerPlay = (board, square, player1, player2) => {
-        currentBoard = displayController.updateBoard(board, square, player1, player2);
-        let winner = displayController.checkWin(currentBoard);
+        let currentBoard = displayControl.updateBoard(board, square, player1, player2);
+        let winner = displayControl.checkWin(currentBoard);
         if (winner != false) {
             displayWinner(winner, player1, player2);
-        };
+        }
     };
     
     // Main playing dynamics
     const playGame = (currentBoard, player1, player2) => {
-        let activePlayer = displayController.activePlayer(currentBoard, player1, player2);
+        let activePlayer = displayControl.activePlayer(currentBoard, player1, player2);
         
         if (activePlayer.truePlayer != "computer") {
             let squares = document.querySelectorAll(".square");
@@ -262,24 +256,28 @@ const playControl = (() => {
                     if (document.querySelector(".winDisplay").innerText == "") {
                         playerPlay(currentBoard, squares[i], player1, player2);
                         playGame(currentBoard, player1, player2);
-                    };
+                    }
                 });
-            };
-        }
-        else {
+            }
+        } else {
             if (document.querySelector(".winDisplay").innerText == "") {
-                let copy = [];
-                for (let i = 0; i < currentBoard.length; i++) { 
-                    copy[i] = currentBoard[i].slice();
-                }
+                let copy = copyBoard(currentBoard);
                 let play = aiPlay.minimax(copy, activePlayer);
                 playerPlay(currentBoard, play, player1, player2);
                 playGame(currentBoard, player1, player2);
-            };
-        };
+            }
+        }
     };
+
+    const copyBoard = (currentBoard) => {
+        let copy = [];
+        for (let i = 0; i < currentBoard.length; i++) { 
+            copy[i] = currentBoard[i].slice();
+        }
+        return copy;
+    }
     
-    return { playGame };
+    return { playGame, startGame };
 })();
 
 
@@ -293,9 +291,9 @@ const aiPlay = (() => {
             for (let j = 0; j < 3; j++) {
                 if (board[i][j] == null) {
                     plays.push([[i],[j]]);
-                };
-            };
-        };
+                }
+            }
+        }
         return plays;
     }
 
@@ -311,15 +309,14 @@ const aiPlay = (() => {
 
     // Checks for winner
     const boardWin = (board) => {
-        let winner = displayController.checkWin(board);
+        let winner = displayControl.checkWin(board);
         if (winner) {
             if (winner == "X") {
                 return 3;
             }
             if (winner == "O") {
                 return 1;
-            }
-            else {
+            } else {
                 return 2;
             }
         }
@@ -354,7 +351,6 @@ const aiPlay = (() => {
         let plays = playCheck(board);
         for (let i = 0; i < plays.length; i++) {
             let result = maxPlay(playResult(board, plays[i][0], plays[i][1], "O"));
-            console.log(result);
             if (result < min) {
                 min = result;
             }
@@ -383,13 +379,11 @@ const aiPlay = (() => {
                         if (column == choice[0] && square == choice[1]) {
                             return squares[i];
                         }
-                    };
-                };
-            };
-        }
-        else {
+                    }
+                }
+            }
+        } else {
             let min = minPlay(board, "O");
-            console.log(min);
             for (let i = 0; i < plays.length; i++) {
                 let result = maxPlay(playResult(board, plays[i][0], plays[i][1], "O"));
                 if (result == min) {
@@ -402,7 +396,7 @@ const aiPlay = (() => {
                         if (column == choice[0] && square == choice[1]) {
                             return squares[i];
                         }
-                    };
+                    }
                 }
             }
         }
